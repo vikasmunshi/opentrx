@@ -5,11 +5,11 @@ SSL listener
 """
 import random
 import socket
-import ssl
+from _ssl import PROTOCOL_TLSv1 as PROTOCOL_TLS
 from base64 import b64encode
 from json import dumps
 from os import urandom, unlink
-from ssl import PROTOCOL_TLSv1_2 as TLSv_1_2
+from ssl import SSLContext
 from tempfile import NamedTemporaryFile
 
 from OpenSSL import crypto
@@ -58,7 +58,7 @@ class Listener(Daemon):
 
     def worker(self, args: dict) -> None:
         self.logger.info('started worker')
-        context = ssl.SSLContext(protocol=TLSv_1_2)
+        context = SSLContext(protocol=PROTOCOL_TLS)
         context.load_cert_chain(certfile=self.__certstore__.name, password=self.__passphrase__.decode())
         https_server = ThreadedHTTPServer(self.address, RequestHandlerClass=RequestHandler)
         https_server.RequestHandlerClass.setlogger(self.basedir)
