@@ -38,11 +38,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                                             size or ' - ')
         )
 
-    def log_error(self, format, *args) -> None:
-        self.logger.error('%s - - [%s] %s' % (self.address_string(), self.log_date_time_string(), format % args))
+    def log_error(self, formatstring, *args) -> None:
+        self.logger.error('%s - - [%s] %s' % (self.address_string(), self.log_date_time_string(), formatstring % args))
 
-    def log_message(self, format, *args) -> None:
-        '''
+    def log_message(self, formatstring, *args) -> None:
+        """
             "%h %l %u %t \"%r\" %>s %b"
             "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\""
             %h	Remote hostname
@@ -53,8 +53,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             %>s	Status. Use %>s for the final status.
             %b	Size of response in bytes, excluding HTTP headers.
             %{VARNAME}i	The contents of VARNAME: header line(s) in the request sent to the server.
-        '''
-        self.logger.info('%s - - [%s] %s' % (self.address_string(), self.log_date_time_string(), format % args))
+        """
+        self.logger.info('%s - - [%s] %s' % (self.address_string(), self.log_date_time_string(), formatstring % args))
 
     def stub(self) -> None:
         status = HTTPStatus.OK

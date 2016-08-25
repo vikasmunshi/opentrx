@@ -5,7 +5,7 @@ SSL listener
 """
 import random
 import socket
-from _ssl import PROTOCOL_TLSv1 as PROTOCOL_TLS
+from _ssl import PROTOCOL_TLSv1 as protocolTLS
 from base64 import b64encode
 from json import dumps
 from os import urandom, unlink
@@ -58,10 +58,10 @@ class Listener(Daemon):
 
     def worker(self, args: dict) -> None:
         self.logger.info('started worker')
-        context = SSLContext(protocol=PROTOCOL_TLS)
+        context = SSLContext(protocol=protocolTLS)
         context.load_cert_chain(certfile=self.__certstore__.name, password=self.__passphrase__.decode())
         https_server = ThreadedHTTPServer(self.address, RequestHandlerClass=RequestHandler)
-        https_server.RequestHandlerClass.setlogger(self.basedir)
+        https_server.RequestHandlerClass.setlogger(self.logdir)
         https_server.socket = context.wrap_socket(https_server.socket, server_side=True)
         try:
             self.logger.info('ready to serve httpd')
@@ -128,6 +128,7 @@ class Listener(Daemon):
             cert.gmtime_adj_notAfter(365 * 24 * 3600)
             cert.set_issuer(cert.get_subject())
             cert.set_pubkey(key)
+            # noinspection PyTypeChecker
             cert.sign(key, 'sha1')
             self.__sslkey__ = crypto.dump_privatekey(type=crypto.FILETYPE_PEM, pkey=key, cipher='aes256',
                                                      passphrase=self.__passphrase__).decode()
